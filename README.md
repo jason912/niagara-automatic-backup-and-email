@@ -40,6 +40,9 @@ This script works by simulating a user visiting the station's backup page in a b
 
 > After setup, visiting `http://YOUR_STATION_IP/px/backup.px` should show a backup management page with a **Start Backup** button.
 
+![backup-px-sample](docs/backup-px-sample.png)
+*Example: backup.px page in the web interface, showing the backup button the script will click.*
+
 ---
 
 ## Features
@@ -240,6 +243,8 @@ Niagara N4.10+ / Niagarax uses a **3-step XHR-based SCRAM**:
 **Q: backup.px returns 404?**
 A: Check that the file exists at `Files/px/backup.px`. This file must be created manually in Workbench — it is not included by default in Niagarax installations.
 
+> 💡 See the screenshot above for what a correctly configured backup.px looks like in the browser.
+
 **Q: Backup file too large for email?**
 A: Use `--no-email` flag. Large files are automatically saved locally + NAS + GitHub. No email needed.
 
@@ -256,7 +261,7 @@ node niagara-backup.js --dry-run
 
 ## Contact
 
-Questions or suggestions? Email me at: **your-email@example.com**
+Questions or suggestions? Email me at: **jason.zhang@gline-net.com**
 
 ---
 
