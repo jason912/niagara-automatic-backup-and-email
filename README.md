@@ -1,6 +1,8 @@
-# 🏗️ Niagara Station Auto Backup
+# 🏗️ Niagara Station Automatic Backup and Email
 
-> Generic Niagara Station backup tool — SCRAM-SHA-256 auth → download `.dist` → NAS archive → email delivery
+> Free Niagara Station backup automation — SCRAM-SHA-256 auth → download `.dist` → NAS archive → email delivery
+
+This tool is **completely free** for any Niagara system. It works by accessing the built-in `backup.px` page via the web interface, which uses the **default BackupService** that comes with every Niagara station — no paid licenses, no additional modules required. The script simply automates the manual process of logging in, clicking the backup button, and saving the resulting `.dist` file.
 
 Supports Niagara 4.10+ (including JACE-8000 and Niagarax).
 
