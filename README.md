@@ -6,74 +6,47 @@ Supports Niagara 4.10+ (including JACE-8000 and Niagarax).
 
 ---
 
-## 工作原理
+## How It Works
 
 ```
-用户手工准备                   自动备份脚本执行
+Manual Setup                     Auto Backup Script
 ┌─────────────────────┐      ┌──────────────────────────┐
 │                     │      │                          │
-│  Station 的 Files    │      │  1. SCRAM 登录站         │
-│  └── px/            │      │  2. 访问 backup.px       │
-│      └── backup.px  │ ────→│  3. 提取 CSRF token      │
-│          ↑ 手工创建  │      │  4. 点击 Backup Button    │
-│                     │      │  5. 下载 .dist 备份文件   │
-│ backup.px 内容:     │      │  6. 存本地 + NAS + GitHub │
-│ 把 BackupService    │      │  7. 可选邮件发送          │
-│ 组件拖到 PX 页面，   │      │                          │
-│ 选择 backup view    │      └──────────────────────────┘
+│  Station Files/     │      │  1. SCRAM login to station│
+│  └── px/            │      │  2. Request backup.px    │
+│      └── backup.px  │ ────→│  3. Extract CSRF token   │
+│          ↑ create me│      │  4. Click Backup Button   │
+│                     │      │  5. Download .dist file  │
+│  backup.px setup:   │      │  6. Save: Local + NAS    │
+│  Drag BackupService │      │  7. Git push to GitHub   │
+│  select "backup"    │      │  8. Optional email send  │
+│  view, save file    │      └──────────────────────────┘
 └─────────────────────┘
 ```
 
-### 关键前提：用户需手工创建 backup.px
+### ⚠️ Key Prerequisite: Create backup.px Manually
 
-脚本的原理是**模拟用户在浏览器中的操作**——进入后台页面，找到备份按钮，点击下载。Niagarax 系统本身没有预置一个可直接 HTTP 访问的备份页面，所以必须在 Station 的 `Files/px/` 目录下手动创建一个 `backup.px` 文件，把 **BackupService** 组件拖进去，选择 **backup** view。
+This script works by simulating a user visiting the station's backup page in a browser. By default, Niagarax does **not** include a `backup.px` file. You must create one manually in Workbench or the Niagarax web interface.
 
-如果没有这个文件，脚本就无法触发备份。
+**Steps:**
+1. Log into Niagara Workbench (or Niagarax web backend)
+2. Navigate to `Files → px/`
+3. Create a new PX file named **`backup.px`**
+4. From the Palette, drag the **`BackupService`** component onto the page
+5. In the dialog, select the **`backup`** view (or `BackupManager`)
+6. Save the file
 
----
-
-## 预备工作（必做）
-
-### 1. 登录 Niagara Workbench（或 Niagarax Web界面）
-
-### 2. 找到 Files → px 目录
-
-在 Workbench 的 Nav 树中：
-```
-MyStation (localhost)
- └── Files
-      └── px/
-```
-
-或者在 Niagarax Web 后台：
-```
-导航 → Config → Files → px/
-```
-
-### 3. 新建 backup.px 文件
-
-> ⚠️ **N4.14 及以下版本**：直接在 `px/` 目录下新建一个 PX 文件，命名为 `backup.px`
->
-> ⚠️ **Niagarax (N4.10+)**：进入 `Config → Files → px/`，新建 PX 文件，命名为 `backup.px`
-
-### 4. 将 BackupService 组件拖入页面
-
-- 从 Palette（组件面板）找到 `BackupService`
-- 拖到新建的 `backup.px` 编辑器窗口
-- 在弹出对话框中选择 **backup** view（或 BackupManager view）
-- 保存文件
-
-> 最终效果：通过浏览器访问 `http://YOUR_STATION_IP/px/backup.px` 可以看到一个备份管理页面，上面有 **Start Backup** 按钮。
+> After setup, visiting `http://YOUR_STATION_IP/px/backup.px` should show a backup management page with a **Start Backup** button.
 
 ---
 
 ## Features
 
 - ✅ SCRAM-SHA-256 3-step AJAX authentication (N4.10 / N4.14 / Niagarax)
-- ✅ 访问 backup.px 页面 → 提取 CSRF token → 触发备份下载
-- ✅ 下载 `.dist` 备份文件（单次获取最新备份）
-- ✅ 本地 + NAS 双存储
-- ✅ Git push 到 GitHub（三重保险）
+- ✅ Access backup.px → extract CSRF token → trigger backup download
+- ✅ Download `.dist` backup files
+- ✅ Local + NAS dual storage
+- ✅ Git push to GitHub (triple redundancy)
 - ✅ Email delivery with attachment (SMTP)
 - ✅ Single-file script, zero external deps (Node.js built-ins + nodemailer)
 
@@ -152,28 +125,46 @@ node niagara-backup.js --dir /path/to/save
 
 ---
 
-## 完整自动化流程（本机执行）
+## Automated Full Flow (Local Execution)
 
 ```bash
 cd C:\Users\Administrator\.openclaw\workspace\niagara-station-backup
 
-# 备份 144 站
+# Backup station 144
 copy .env.144 .env
 node niagara-backup.js --no-email
 
-# 备份文件自动提交到 GitHub
+# Auto-commit backup file to GitHub
 git add -A
 git commit -m "Backup IAQ_Cloud $(date +%%Y-%%m-%%d_%%H:%%M)"
 git push
 ```
 
-### 备份文件存储位置
+### Backup Storage Locations
 
-| 级别 | 路径 |
-|------|------|
-| 💻 本地磁盘 | `backups/`（脚本同目录） |
+| Layer | Path |
+|-------|------|
+| 💻 Local | `backups/` (same dir as script) |
 | 🗄️ NAS | `\\192.168.2.155\temp\niagara-backups\` |
 | ☁️ GitHub | https://github.com/jason912/niagara-station-backup |
+
+---
+
+## Multi-Station Setup
+
+Create separate `.env` files for each station, then copy before running:
+
+```
+.env.112   → 192.168.2.112 (N4.14 test station)
+.env.144   → 192.168.2.144 (IAQ_Cloud)
+...
+```
+
+Usage:
+```bash
+copy .env.144 .env
+node niagara-backup.js --no-email
+```
 
 ---
 
@@ -198,14 +189,14 @@ Action:  node D:\scripts\niagara-backup.js
 
 ```
 niagara-station-backup/
-├── niagara-backup.js     ← Main script (自动备份引擎)
+├── niagara-backup.js     ← Main script (backup engine)
 ├── .env.example          ← Config template (no secrets)
 ├── .env                  ← Your actual config (in .gitignore)
-├── .env.112              ← 多站配置：112站
-├── .env.144              ← 多站配置：144站 (IAQ_Cloud)
+├── .env.112              ← Multi-station: station 112
+├── .env.144              ← Multi-station: station 144 (IAQ_Cloud)
 ├── README.md             ← This file
-├── backups/              ← 备份输出目录 (auto-created)
-├── SKILL.md              ← OpenClaw AI 技能定义
+├── backups/              ← Backup output dir (auto-created)
+├── SKILL.md              ← OpenClaw AI skill definition
 └── .gitignore
 ```
 
@@ -225,7 +216,9 @@ POST /prelogin (username)
   → Trigger backup download (startBackup=true)
 ```
 
-Niagara N4.10/Niagarax uses a **3-step XHR-based SCRAM**:
+### SCRAM-SHA-256 Auth
+
+Niagara N4.10+ / Niagarax uses a **3-step XHR-based SCRAM**:
 1. `action=sendClientFirstMessage` — send client nonce
 2. Server responds with salt + iterations + server nonce
 3. `action=sendClientFinalMessage` — send computed SCRAM proof
@@ -241,29 +234,28 @@ Niagara N4.10/Niagarax uses a **3-step XHR-based SCRAM**:
 
 ---
 
-## 常见问题
+## FAQ
 
-**Q: 访问 backup.px 出现 404？**
-A: Check if the file was created in the correct location (`Files/px/backup.px`). The default Niagarax installation does not include this file — it must be created manually in Workbench.
+**Q: backup.px returns 404?**
+A: Check that the file exists at `Files/px/backup.px`. This file must be created manually in Workbench — it is not included by default in Niagarax installations.
 
-**Q: 备份文件太大，邮件发不出？**
-A: Use `--no-email` flag. 大文件备份自动存本地 + NAS + GitHub，不需要邮件。
+**Q: Backup file too large for email?**
+A: Use `--no-email` flag. Large files are automatically saved locally + NAS + GitHub. No email needed.
 
-**Q: NAS 连不上？**
-A: 确保 NAS 已开机，检查网络连接。技能会自动尝试连接，失败会跳过 NAS 存储但不会中断备份。
+**Q: NAS connection fails?**
+A: Ensure the NAS is powered on and network is reachable. The script will skip NAS on failure without interrupting the backup.
 
-**Q: 如何验证脚本能正常登录站？**
-A: 先用 `--dry-run` 测试认证：
+**Q: How to verify the script can log in?**
+A: Run with `--dry-run` first:
 ```bash
 node niagara-backup.js --dry-run
 ```
 
 ---
 
-## 联系作者
+## Contact
 
-有问题或建议，欢迎邮件联系：
-**jason.zhang@gline-net.com**
+Questions or suggestions? Email me at: **jason.zhang@gline-net.com**
 
 ---
 
