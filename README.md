@@ -1,4 +1,10 @@
-# 🏗️ Niagara Station Automatic Backup and Email
+# 🏗️ Niagara Station Automatic Backup and Email 🆓
+
+[![Niagara 4.14+](https://img.shields.io/badge/Niagara-4.14%2B-blue)](https://www.tridium.com)
+[![Free to use](https://img.shields.io/badge/Free_to_use-brightgreen)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+
+> **🆓 Free Niagara Station backup automation — SCRAM-SHA-256 auth → download `.dist` → NAS archive → email delivery.**
 
 > Free Niagara Station backup automation — SCRAM-SHA-256 auth → download `.dist` → NAS archive → email delivery
 
