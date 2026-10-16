@@ -274,3 +274,18 @@ Questions or suggestions? Email me at: **jason.zhang@gline-net.com**
 ## License
 
 MIT
+
+---
+
+## Commercial Support
+
+This module is free of charge under the MIT License (see [LICENSE](LICENSE)).
+
+For production deployments requiring warranty, priority support, or custom
+development, commercial support is available.
+
+- Email: jason.zhang@gline-net.com
+- WhatsApp: +86 138 0199 0968
+- Web: [www.glineweb.com](https://www.glineweb.com)
+
+Shanghai Gline Net Co., Ltd.
